@@ -121,21 +121,26 @@ class Client(object):
         else:
             return resp
 
-    def get_instruments(self):
+    def get_instruments(self, instruments=None, fields=None):
         """
             See more:
             http://developer.oanda.com/rest-live/rates/#getInstrumentList
         """
         url = "{0}/{1}/instruments".format(self.domain, self.API_VERSION)
-        params = {"accountId": self.account_id}
+        if fields == None:
+            fields = "displayName,pip,maxTradeUnits,precision,maxTrailingStop  \
+                ,minTrailingStop,marginRate,halted,interestRate"
+        params = {
+            "accountId"     : self.account_id,
+            "instruments"   : instruments,
+            "fields"        : fields
+        }
         try:
             response = self._Client__call(uri=url, params=params)
-            assert len(response) > 0
             return response
-        except RequestException:
-            return False
         except AssertionError:
             return False
+
 
     def get_prices(self, instruments, stream=True):
         """
